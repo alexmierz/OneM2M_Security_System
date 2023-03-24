@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('status/', TemplateView.as_view(template_name='status.html'), name='status'),
     path('upload/', TemplateView.as_view(template_name='upload.html'), name='upload'),
+    path('garage/', TemplateView.as_view(template_name='garage.html'), name='garage'),
     #path('status', views.status),
     #path('status.html', views.status, name="status"),
     #path('', include ('main.urls')),
