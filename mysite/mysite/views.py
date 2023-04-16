@@ -114,34 +114,64 @@ def getResId(tag,r):
     return resId
 
 
-def create(request):
+def home(request):
 
         poa = 'http://{}:{}'.format(appIP,appPort)
-        payld = { "m2m:ae": { "rr": True, "api": "NR_AE001", "apn": "IOTApp", "csz": [ "application/json" ], "srv": [ "2a" ], "rn": deviceName, "poa": [ poa ],"acpi": ["cse-in/acpLightAppPolicy"] } }
+        payld = { "m2m:ae": { "rr": True, "api": "NR_AE001", "apn": "IOTApp", "csz": [ "application/json" ], "srv": [ "2a" ], "rn": deviceName, "poa": [ poa ]} }
         
         print ("AE Create Request")
         #print (payld)
-        url = 'http://' + cseIP + ':' + csePort + '/' + cseID
+        #url = 'http://' + cseIP + ':' + csePort + '/' + cseID
+        url = 'http://35.89.20.163:8080/psu23-capstone'
         hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':appID, 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=2"}
         r = requests.post(url, data=dumps(payld), headers=hdrs)
         print ("AE Create Response")
         print (r.text)
 
+        payld = {"m2m:acp" :{"rn": "psu23-cse", "pv": {"acr": [{"acor":["CF1"], "acop": 63}]},"pvs": {"acr": [{"acor":["CF1"], "acop": 63},{"acor":["CF1"], "acop": 63}]}}}
+        print("Make ACP")
+        # url = 'http://' + cseIP + ':' + csePort + '/' + parentID
+        url = 'http://35.89.20.163:8080/psu23-capstone'
+        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
+        r = requests.post(url, data=dumps(payld), headers=hdrs)
+        print("ACP CReate REsponse")
+        print(r.text)
+
        # return getResId('m2m:ae',r)
         #print("sent?")
-        return render(request, "status.html", {})
+        return render(request, "home.html", {})
 
 
 def garage(request):
     return render(request, "garage.html")
 
-def home(request):
-    return render(request, "home.html")
+def create(request):
+    payld = { "m2m:cnt": { "rn": "thingy91", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/"]} }
+    print ("CNT Create Request")
+    #print (payld)
+    #url = 'http://' + cseIP + ':' + csePort + '/' + "lamppost-F1"
+    url = 'http://35.89.20.163:8080/psu23-capstone'
+    hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
+    r = requests.post(url, data=dumps(payld), headers=hdrs)
+    print ("CNT Create Response")
+    print (r.text)
+
+    #return getResId('m2m:cnt',r)
+    return render(request, "status.html")
     
 def status(request):
     return render(request, "status.html")
 
 def upload(request):
     return render(request, "upload.html")
+
+def temp(request):
+    #url = 'http://' + cseIP + ':' + csePort + '/' + cseName + '/'+ resourceName
+    url = 'http://35.89.20.163:8080/psu23-capstone/lamppost-F1'
+    hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json"}
+    r = requests.delete(url,  headers=hdrs)
+    print ("AE Delete Response")
+    print (r.text)
+    return render(request, "temp.html")
     
     
