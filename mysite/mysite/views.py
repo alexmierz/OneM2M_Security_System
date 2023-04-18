@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 #import socket
 
 
+
+
 import os.path
 #import PIL.Image #pip install Pillow
 import io
@@ -17,6 +19,15 @@ from configparser import ConfigParser
 # for sending http requests using json
 import requests
 from json import loads, dumps
+
+
+from django.http import HttpResponseRedirect
+
+
+# Imaginary function to handle an uploaded file.
+#from somewhere import handle_uploaded_file
+
+
 
 # the sensors and http listener (for notifications) use threads
 #import threading
@@ -144,5 +155,19 @@ def temp(request):
     print ("AE Delete Response")
     print (r.text)
     return render(request, "temp.html")
-    
-    
+
+
+
+
+# def upload_file(request):
+#     if request.method == "POST":
+#         form = UploadFileForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             handle_uploaded_file(request.FILES["file"])
+#             return HttpResponseRedirect("/success/url/")
+#     else:
+#         form = UploadFileForm()
+#     return render(request, "upload.html", {"form": form})
+
+
+

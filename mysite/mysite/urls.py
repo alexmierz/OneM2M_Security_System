@@ -19,9 +19,9 @@ urlpatterns = [
     path('', views.home, name='home'),
 
     path('status/', views.create, name='status'),
-    path('upload/', views.upload, name='upload'),
     path('garage/',views.garage, name='garage'),
     path('temp/',views.temp, name='temp'),
+    path('', include('photos.urls')),
     #path('garage/',views.garage),
     #path('status', views.status),
     #path('status.html', views.status, name="status"),
