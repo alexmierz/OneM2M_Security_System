@@ -44,11 +44,7 @@ cseID = parser.get('CONFIG_DATA', 'cseID')
 cseName = parser.get('CONFIG_DATA', 'cseName')
 
 
-# These are <semanticdescriptor> payloads read from the config file
-smdAEPayld = parser.get('DEVICE_CONFIG', 'smdAEPayld')
-smdLightCommandPayld = parser.get('DEVICE_CONFIG', 'smdLightCommandPayld')
-smdLightStatusPayld = parser.get('DEVICE_CONFIG', 'smdLightStatusPayld')
-smdSensorPayld = parser.get('DEVICE_CONFIG', 'smdSensorPayld')
+
 
 deviceName = parser.get("DEVICE_CONFIG", "deviceName")
 Illuminance = parser.get("DEVICE_CONFIG", "Illuminance")
@@ -63,55 +59,6 @@ Y_position = parser.get("DEVICE_CONFIG", "Y_position")
 REGISTER_ON_START = parser.get("DEVICE_CONFIG", "REGISTER_ON_START")
 DEREGISTER_ON_EXIT = parser.get("DEVICE_CONFIG", "DEREGISTER_ON_EXIT")
 
-
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
- 
- 
-
- count = 0
-
-
-def do_POST(self):
-            
-
-    # Construct return header
-    mySendResponse(self, 200, 2001)
-
-    # Get headers and content data
-    length = int(self.headers['Content-Length'])
-    contentType = self.headers['Content-Type']
-    post_data = self.rfile.read(length)
-    
-    # Print the content data
-    print('### Notification')
-    print (self.headers)
-    print(post_data.decode('utf-8'))
-    r = loads(post_data.decode('utf8').replace("'", '"'))
-    lampCommand = r['m2m:sgn']['nev']['rep']['m2m:cin']['con']
-    print(lampCommand)
-    #window.write_event_value("-Lamp-", lampCommand)
-    self.count += 1 # reduce the number of notifications printed in the console.
-    #if (self.count % 100 == 0):
-    return None
-    #print("Not " + str(self.count))
-        
-def mySendResponse(self, responseCode, rsc, payload=None):
-     self.send_response(responseCode)
-     self.send_header("X-M2M-RI", self.headers['X-M2M-RI'])
-     self.send_header("X-M2M-RSC", rsc)
-     self.end_headers()
-     if payload:
-        self.wfile.write(payload.getvalue())
-
-
-
-def getResId(tag,r):
-    try:
-        resId = r.json()[tag]['ri']
-    except:
-        #allready created
-        resId = ""
-    return resId
 
 
 def home(request):
@@ -128,11 +75,11 @@ def home(request):
         print ("AE Create Response")
         print (r.text)
 
-        payld = {"m2m:acp" :{"rn": "psu23-cse", "pv": {"acr": [{"acor":["CF1"], "acop": 63}]},"pvs": {"acr": [{"acor":["CF1"], "acop": 63},{"acor":["CF1"], "acop": 63}]}}}
+        payld = {"m2m:acp" :{"rn": "CF1-ACP", "pv": {"acr": [{"acor":["CF1"], "acop": 63}]},"pvs": {"acr": [{"acor":["CF1"], "acop": 63},{"acor":["CF1"], "acop": 63}]}}}
         print("Make ACP")
-        # url = 'http://' + cseIP + ':' + csePort + '/' + parentID
-        url = 'http://35.89.20.163:8080/psu23-capstone'
-        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
+        #url = 'http://' + cseIP + ':' + csePort + '/' + parentID
+        url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1'
+        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=1"}
         r = requests.post(url, data=dumps(payld), headers=hdrs)
         print("ACP CReate REsponse")
         print(r.text)
@@ -144,21 +91,45 @@ def home(request):
 
 def garage(request):
     return render(request, "garage.html")
-
+#10
 def create(request):
-    payld = { "m2m:cnt": { "rn": "thingy91", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/"]} }
+    payld = { "m2m:cnt": { "rn": "thingy91", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/lamppost-F1/CF1-ACP"]} }
     print ("CNT Create Request")
     #print (payld)
     #url = 'http://' + cseIP + ':' + csePort + '/' + "lamppost-F1"
-    url = 'http://35.89.20.163:8080/psu23-capstone'
+    url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1'
     hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
     r = requests.post(url, data=dumps(payld), headers=hdrs)
     print ("CNT Create Response")
     print (r.text)
+    
+
+
+    payld = { "m2m:cin": { "cnf": "application/text:0", "con": "1"} }
+    print ("CI Create Request")
+    #print (payld)
+    #url = 'http://' + cseIP + ':' + csePort + '/' + parentID
+    url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1/thingy91'
+    hdrs = {'X-M2M-RI':"sensorValue",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=4"}
+    r = requests.post(url, data=dumps(payld), headers=hdrs)
+    print ("CIN Create Response")
+    print (r.text)
+    url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1/thingy91/la'
+    hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF1", 'X-M2M-RVI':'2a' ,'Accept':"application/json"}
+    r = requests.get(url, data=dumps(payld), headers=hdrs)
+    print(r.text[50])
+    #cont = int(r.text[50])
+    text = str(r.text)
+    start = text.find('"con":')
+    print(start)
+    cont = int(r.text[start + 8])
 
     #return getResId('m2m:cnt',r)
-    return render(request, "status.html")
-    
+    return render(request, "status.html", {"cont": cont})
+    #psu23-cse/lamppost-F1/thingy91
+
+
+
 def status(request):
     return render(request, "status.html")
 
