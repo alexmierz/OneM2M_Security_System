@@ -10,6 +10,7 @@ def photo_upload_view(request):
             # handle_uploaded_file(request.FILES.get("file"))
             form.save()
             return render(request, "home.html")
+        print("success!")
     else:
         form = PhotoUpload()
     return render(request, "upload.html", {"form": form})

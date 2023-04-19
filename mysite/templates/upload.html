@@ -56,18 +56,14 @@
         <div class="container">
 
           <h2 class="my-4">Upload a File</h2>
-          <form method="post" enctype="multipart/form-data">
+          <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-			<!-- {{ form.Title }}
-			{{form.File}} -->
-		
+			{{ form.as_p }}
 			
-
-			
-                <input type="file" name="upload" accept=".jpeg, .png, .jpg">
-                <br>
-                <button class="btn btn-dark my-4" type="submit">Submit</button>
+            <input type="file" name="upload" accept=".jpeg, .png, .jpg">
+            <br>
+            <button class="btn btn-dark my-4" type="submit">Submit</button>
           </form>
 
         </div>

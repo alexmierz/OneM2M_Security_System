@@ -26,5 +26,5 @@ urlpatterns = [
     #path('status', views.status),
     #path('status.html', views.status, name="status"),
     #path('', include ('main.urls')),
-] 
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
