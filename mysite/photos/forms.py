@@ -9,8 +9,8 @@ class PhotoUpload(forms.ModelForm):
         fields = ('Title', 'File')
 
         widgets = {
-            'Title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
-            'File': forms.FileInput(attrs={'class': 'form-control', 'placeholder': 'Address'}),
+            'Title': forms.TextInput(attrs={}),
+            'File': forms.FileInput(attrs={}),
             
 
         }
