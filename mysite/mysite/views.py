@@ -28,34 +28,78 @@ deviceName = parser.get("DEVICE_CONFIG", "deviceName")
 
 def home(request):
 
-        # create an AE resource
+        # create an AE resource -> Lamppost -F1
         poa = 'http://{}:{}'.format(appIP,appPort)
         payld = { "m2m:ae": { "rr": True, "api": "NR_AE001", "apn": "IOTApp", "csz": [ "application/json" ], "srv": [ "2a" ], "rn": deviceName, "poa": [ poa ]} }
         url = 'http://35.89.20.163:8080/psu23-capstone'
         hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':appID, 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=2"}
         r = requests.post(url, data=dumps(payld), headers=hdrs)
        
-        print ("AE Create Response")
+        print ("AE Create Response lamppost")
         print (r.text)
 
-        # create an ACP
+        # create an AE resource -> ThingyHex
+        poa = 'http://{}:{}'.format(appIP,appPort)
+        payld = { "m2m:ae": { "rr": True, "api": "NR_AE001", "apn": "IOTApp", "csz": [ "application/json" ], "srv": [ "2a" ], "rn": "ThingyHex", "poa": [ poa ]} }
+        url = 'http://35.89.20.163:8080/psu23-capstone'
+        hdrs = {'X-M2M-RI':"CAE",'X-M2M-Origin': "CF2", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=2"}
+        r = requests.post(url, data=dumps(payld), headers=hdrs)
+
+        print ("AE Create Response Thingy")
+        print (r.text)
+
+        # create an ACP -> CF-1-ACP
         payld = {"m2m:acp" :{"rn": "CF1-ACP", "pv": {"acr": [{"acor":["CF1"], "acop": 63}]},"pvs": {"acr": [{"acor":["CF1"], "acop": 63},{"acor":["CF1"], "acop": 63}]}}}
-        print("Make ACP")
+        print("Make ACP for CF1")
         url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1'
         hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=1"}
         r = requests.post(url, data=dumps(payld), headers=hdrs)
         
-        print("ACP CReate REsponse")
+        print("ACP CReate Response for CF1")
+        print(r.text)
+
+         # create an ACP -> CF-2-ACP
+        payld = {"m2m:acp" :{"rn": "CF1-ACP", "pv": {"acr": [{"acor":["CF2"], "acop": 63}]},"pvs": {"acr": [{"acor":["CF2"], "acop": 63},{"acor":["CF2"], "acop": 63}]}}}
+        print("Make ACP for CF2")
+        url = 'http://35.89.20.163:8080/psu23-cse/ThingyHex'
+        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin':"CF2", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=1"}
+        r = requests.post(url, data=dumps(payld), headers=hdrs)
+        
+        print("ACP CReate REsponse for CF2")
         print(r.text)
 
 
-        # create a Container
+
+        # create a Container -> thingy91
         payld = { "m2m:cnt": { "rn": "thingy91", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/lamppost-F1/CF1-ACP"]} }
         print ("CNT Create Request")
         #print (payld)
         #url = 'http://' + cseIP + ':' + csePort + '/' + "lamppost-F1"
         url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1'
         hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
+        r = requests.post(url, data=dumps(payld), headers=hdrs)
+        print ("CNT Create Response")
+        print (r.text) 
+
+        
+        # create a Container -> raspberrypi
+        payld = { "m2m:cnt": { "rn": "raspberrypi", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/lamppost-F1/CF1-ACP"]} }
+        print ("CNT Create Request")
+        #print (payld)
+        #url = 'http://' + cseIP + ':' + csePort + '/' + "lamppost-F1"
+        url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1'
+        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
+        r = requests.post(url, data=dumps(payld), headers=hdrs)
+        print ("CNT Create Response")
+        print (r.text) 
+        
+         # create a Container -> thingy91
+        payld = { "m2m:cnt": { "rn": "thingy91", "lbl": [ "key1", "key2" ], "mni": 10,  "acpi": ["psu23-cse/ThingyHex/CF1-ACP"]} }
+        print ("CNT Create Request")
+        #print (payld)
+        #url = 'http://' + cseIP + ':' + csePort + '/' + "lamppost-F1"
+        url = 'http://35.89.20.163:8080/psu23-cse/ThingyHex'
+        hdrs = {'X-M2M-RI':"CAE_Test",'X-M2M-Origin': "CF2", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=3"}
         r = requests.post(url, data=dumps(payld), headers=hdrs)
         print ("CNT Create Response")
         print (r.text) 

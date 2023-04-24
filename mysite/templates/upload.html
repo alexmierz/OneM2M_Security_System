@@ -52,18 +52,18 @@
 
 
 
-
+		{%if num == 0%}
         <div class="container">
-
+			alert("Hello! I am an alert box!")
           <h2 class="my-4">Upload a File</h2>
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-			{{ form.File}}
+			{{ form.as_p}}
 			
             <button class="btn btn-dark my-4" type="submit">Submit</button>
           </form>
-
+			</div>
         </div>
     
 

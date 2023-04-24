@@ -6,6 +6,8 @@ import binascii
 import face_recognition
 import requests
 from json import dumps
+import time
+import math
 
 def photo_upload_view(request):
     
@@ -24,25 +26,49 @@ def photo_upload_view(request):
                     if mod_time > recent:
                         recent_file = entry.name
                         recent = mod_time
+
+            print("hi")
             
             # getting the hex and putting it into a content instance
             try:
                 file_path = folder_path +"/" + str(recent_file)
                 new_hex = str(encode(file_path))
+                part_length = 2000
+                num_parts = math.ceil(len(new_hex) / part_length) 
+                print("Total length: " + str(len(new_hex)) + "\nPart length: " + str(part_length) + "\nNum of parts: " + str(num_parts ))
+                print("hi2")
+                parts = [new_hex[i:i+part_length] for i in range(0, len(new_hex), part_length)]
+                print("split success")
+                print(len(parts))
+
 
                 # creation of the content instance for the hex
 
-                payld = { "m2m:cin": { "cnf": "application/text:0", "con": new_hex} }
+                
                 print ("CI Create Request")
                 url = 'http://35.89.20.163:8080/psu23-cse/lamppost-F1/thingy91'
                 hdrs = {'X-M2M-RI':"sensorValue",'X-M2M-Origin':"CF1", 'X-M2M-RVI':'2a' ,'Content-Type':"application/json;ty=4"}
-                r = requests.post(url, data=dumps(payld), headers=hdrs)
+                # payld = { "m2m:cin": { "cnf": "application/text:0", "con": new_hex} }
+                # r = requests.post(url, data=dumps(payld), headers=hdrs)
 
-            
-                return render(request, "home.html")
+                message = []
+                count = 1
+                for part in parts:
+                    payld = { "m2m:cin": { "cnf": "application/text:0", "con": part} }
+                    r = requests.post(url, data=dumps(payld), headers=hdrs)
+                    time.sleep(10)
+                    print(part[:5])
+                    message.append("part " + str(count) + " of "+ str(num_parts) +" is uploaded")
+                num = 1
+
+
+
+                return render(request, "home.html", {"message": message, "num": num})
             
             except:
-                return render(request, "upload.html")
+                num = 0
+                message = "Photo NOT UPLOADED.........."
+                return render(request, "upload.html", {"message": message, "num": num})
     
     else:
         form = PhotoUpload()
@@ -59,10 +85,13 @@ def encode(f):
         with open('abencoding.txt', 'rb') as fp:
             hexstring = binascii.hexlify(fp.read())
 
+        print("Encoded Successfully!!")
+
+        print(len(hexstring))      
+
         return hexstring
-    
     except:
 
-        return "There is an error"
+        return "There is an ERROR buddy."
 
     
