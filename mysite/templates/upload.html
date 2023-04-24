@@ -53,6 +53,7 @@
 
 
 		{%if num == 0%}
+
         <div class="container">
 			alert("Hello! I am an alert box!")
           <h2 class="my-4">Upload a File</h2>
@@ -65,5 +66,28 @@
           </form>
 			</div>
         </div>
+		{% if messages %}
+			{% for message in messages %}
+			<div class="alert alert-primary" role="alert">
+				<p> {{message}} </p>
+			</div>
+				<!-- <p> {{message}} </p> -->
+				{% endfor %}
+				{% endif %}
+			{% else %}
+			<div class="container">
+				<!-- alert("Hello! I am an alert box!") -->
+				
+			  <h2 class="my-4">Upload a File</h2>
+			  <form method="POST" enctype="multipart/form-data">
+				{% csrf_token %}
+	
+				{{ form.as_p}}
+				
+				<button class="btn btn-dark my-4" type="submit">Submit</button>
+			  </form>
+				</div>
+			</div>
+			{% endif %}
     
 

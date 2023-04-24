@@ -8,6 +8,7 @@ import requests
 from json import dumps
 import time
 import math
+from django.contrib import messages
 
 def photo_upload_view(request):
     
@@ -33,13 +34,16 @@ def photo_upload_view(request):
             try:
                 file_path = folder_path +"/" + str(recent_file)
                 new_hex = str(encode(file_path))
-                part_length = 2000
+                if new_hex == "ERROR":
+                    raise Exception("Bad Hex")
+                part_length = 750
                 num_parts = math.ceil(len(new_hex) / part_length) 
                 print("Total length: " + str(len(new_hex)) + "\nPart length: " + str(part_length) + "\nNum of parts: " + str(num_parts ))
                 print("hi2")
                 parts = [new_hex[i:i+part_length] for i in range(0, len(new_hex), part_length)]
                 print("split success")
                 print(len(parts))
+                messages.success(request, "You successfully uploaded an Image!")
 
 
                 # creation of the content instance for the hex
@@ -51,24 +55,25 @@ def photo_upload_view(request):
                 # payld = { "m2m:cin": { "cnf": "application/text:0", "con": new_hex} }
                 # r = requests.post(url, data=dumps(payld), headers=hdrs)
 
-                message = []
+                #message = []
                 count = 1
                 for part in parts:
                     payld = { "m2m:cin": { "cnf": "application/text:0", "con": part} }
                     r = requests.post(url, data=dumps(payld), headers=hdrs)
-                    time.sleep(10)
+                    time.sleep(5)
                     print(part[:5])
-                    message.append("part " + str(count) + " of "+ str(num_parts) +" is uploaded")
+                    #message.append("part " + str(count) + " of "+ str(num_parts) +" is uploaded")
                 num = 1
 
 
 
-                return render(request, "home.html", {"message": message, "num": num})
+                return render(request, "home.html", {"num": num})
             
             except:
+                messages.error(request, "There is problem is file upload!")
                 num = 0
-                message = "Photo NOT UPLOADED.........."
-                return render(request, "upload.html", {"message": message, "num": num})
+                #message = "Photo NOT UPLOADED.........."
+                return render(request, "upload.html", {"num": num})
     
     else:
         form = PhotoUpload()
@@ -91,7 +96,6 @@ def encode(f):
 
         return hexstring
     except:
-
-        return "There is an ERROR buddy."
+        return "ERROR"
 
     
